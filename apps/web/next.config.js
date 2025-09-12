@@ -28,18 +28,17 @@ const nextConfig = {
   },
   outputFileTracingRoot: path.join(__dirname, "../../"), // silence lockfile warning
 
-  // ✅ Add ESLint + TS config
   eslint: {
-    ignoreDuringBuilds: true, // prevents Vercel from failing if eslint isn't installed
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true, // ✅ skip TS errors to allow build to succeed
+    ignoreBuildErrors: true,
   },
 
-  // ✅ Fix for Vercel missing client-reference-manifest.js
   experimental: {
-    outputFileTracingIncludes: {
-      "/": ["./.next/server/app/**"],
+    // ✅ exclude problematic manifest from tracing
+    outputFileTracingExcludes: {
+      "*": ["**/page_client-reference-manifest.js"],
     },
   },
 };
