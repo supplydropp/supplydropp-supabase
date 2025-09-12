@@ -8,20 +8,20 @@
     "start": "next start"
   },
   "dependencies": {
+    "@repo/lib": "*",
+    "@repo/store": "*",
+    "@repo/types": "*",
+    "@repo/ui": "*",
+    "appwrite": "^14.0.0",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.1",
-    "appwrite": "^14.0.0",
-    "zustand": "^4.4.1",
-    "@repo/ui": "*",
-    "@repo/lib": "*",
-    "@repo/types": "*",
-    "@repo/store": "*"
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.0",
-    "typescript": "5.9.2"
+    "typescript": "^5.9.2"
   }
 }
