@@ -11,7 +11,13 @@
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native-web": "^0.21.1"
+    "react-native-web": "^0.21.1",
+    "appwrite": "^14.0.0",
+    "zustand": "^4.4.1",
+    "@repo/ui": "*",
+    "@repo/lib": "*",
+    "@repo/types": "*",
+    "@repo/store": "*"
   },
   "devDependencies": {
     "@types/react": "19.1.0",
