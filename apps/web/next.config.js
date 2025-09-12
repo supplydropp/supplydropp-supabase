@@ -27,6 +27,14 @@ const nextConfig = {
     },
   },
   outputFileTracingRoot: path.join(__dirname, "../../"), // silence lockfile warning
+
+  // ✅ Add ESLint + TS config
+  eslint: {
+    ignoreDuringBuilds: true, // prevents Vercel from failing if eslint isn't installed
+  },
+  typescript: {
+    ignoreBuildErrors: false, // keep strict TS checks, set to true only if blocking deploy
+  },
 };
 
 module.exports = nextConfig;
