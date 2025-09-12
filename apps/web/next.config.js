@@ -35,6 +35,13 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, // ✅ skip TS errors to allow build to succeed
   },
+
+  // ✅ Fix for Vercel missing client-reference-manifest.js
+  experimental: {
+    outputFileTracingIncludes: {
+      "/": ["./.next/server/app/**"],
+    },
+  },
 };
 
 module.exports = nextConfig;
