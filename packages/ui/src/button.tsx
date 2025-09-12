@@ -1,38 +1,46 @@
+// packages/ui/src/Button.tsx
 "use client";
 
 import * as React from "react";
 import { Platform, Pressable, Text, StyleSheet } from "react-native";
 
 export interface ButtonProps {
-  title: string;
+  children: React.ReactNode;
   onPress?: () => void;
+  disabled?: boolean; // 👈 add this
 }
 
-export function Button({ title, onPress }: ButtonProps) {
+export function Button({ children, onPress, disabled }: ButtonProps) {
   if (Platform.OS === "web") {
-    // Web: Use native <button>
     return (
       <button
         onClick={onPress}
+        disabled={disabled}
         style={{
           padding: "12px 20px",
           borderRadius: "8px",
-          backgroundColor: "#0070f3",
+          backgroundColor: disabled ? "#9ca3af" : "#0070f3",
           color: "white",
           fontWeight: "bold",
-          cursor: "pointer",
+          cursor: disabled ? "not-allowed" : "pointer",
           border: "none",
         }}
       >
-        {title}
+        {children}
       </button>
     );
   }
 
-  // Mobile: Use Pressable + Text
   return (
-    <Pressable onPress={onPress} style={styles.button}>
-      <Text style={styles.text}>{title}</Text>
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.button,
+        disabled && { backgroundColor: "#9ca3af" },
+      ]}
+      disabled={disabled}
+    >
+      <Text style={styles.text}>{children}</Text>
     </Pressable>
   );
 }

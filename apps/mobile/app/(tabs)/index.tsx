@@ -1,10 +1,9 @@
-import { View } from "react-native";
-import { Button } from "@repo/ui/Button";
+import { View, Text } from "react-native";
 
 export default function Home() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Button title="Tap Me" onPress={() => console.log("Mobile Button tapped")} />
+    <View className="flex-1 items-center justify-center">
+      <Text className="text-xl">Home Page</Text>
     </View>
   );
 }
