@@ -1,30 +1,30 @@
-// packages/ui/src/SignInForm.tsx
+// packages/ui/src/SignUpForm.tsx
 import React, { useState } from "react";
 import { View } from "react-native";
 import { TextInput, Button } from "@repo/ui";
 
 type Props = {
-  onSubmit: (email: string, password: string) => Promise<void>;
+  onSubmit: (email: string, password: string, name: string) => Promise<void>;
   loading?: boolean;
   footer?: React.ReactNode;
 };
 
-export function SignInForm({ onSubmit, loading, footer }: Props) {
-  const [form, setForm] = useState({ email: "", password: "" });
+export function SignUpForm({ onSubmit, loading, footer }: Props) {
+  const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!form.email || !form.password) {
-      alert("Please enter a valid email & password.");
+    if (!form.email || !form.password || !form.name) {
+      alert("Please fill out all fields");
       return;
     }
     if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      await onSubmit(form.email.trim().toLowerCase(), form.password);
+      await onSubmit(form.email.trim().toLowerCase(), form.password, form.name);
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Sign-in failed");
+      alert(err instanceof Error ? err.message : "Sign-up failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -32,6 +32,12 @@ export function SignInForm({ onSubmit, loading, footer }: Props) {
 
   return (
     <View className="gap-4 bg-white rounded-lg p-5 w-full max-w-md">
+      <TextInput
+        placeholder="Name"
+        value={form.name}
+        onChangeText={(t) => setForm((p) => ({ ...p, name: t }))}
+        label="Name"
+      />
       <TextInput
         placeholder="Email"
         value={form.email}
@@ -48,7 +54,7 @@ export function SignInForm({ onSubmit, loading, footer }: Props) {
         secureTextEntry
       />
       <Button onPress={handleSubmit} disabled={loading || isSubmitting}>
-        {loading || isSubmitting ? "Loading..." : "Sign In"}
+        {loading || isSubmitting ? "Loading..." : "Sign Up"}
       </Button>
 
       {footer && <View className="mt-3">{footer}</View>}

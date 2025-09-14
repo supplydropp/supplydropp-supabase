@@ -19,6 +19,7 @@
     "typescript": "5.9.2"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "appwrite": "^20.0.0",
     "nativewind": "^4.2.0",
     "postcss": "^8.5.6",

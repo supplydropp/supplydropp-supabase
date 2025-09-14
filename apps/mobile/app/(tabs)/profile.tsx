@@ -1,5 +1,6 @@
 import { View, Text, Button } from "react-native";
-import useAuthStore from "@repo/store/auth.store";
+import { useAuthStore } from "@repo/store/auth.store"; // ✅ correct
+
 
 export default function Profile() {
   const { logout } = useAuthStore();

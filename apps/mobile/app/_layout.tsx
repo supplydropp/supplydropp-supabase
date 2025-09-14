@@ -2,8 +2,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useFonts } from "expo-font";
-import useAuthStore from "@repo/store/auth.store";
-
+import { useAuthStore } from "@repo/store/auth.store";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 

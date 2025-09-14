@@ -1,7 +1,8 @@
 // apps/mobile/app/(root)/index.tsx
 import { View, Text } from "react-native";
 import { Button } from "@repo/ui";
-import useAuthStore from "@repo/store/auth.store";
+import { useAuthStore } from "@repo/store/auth.store"; // ✅ correct
+
 
 export default function Home() {
   const { logout } = useAuthStore();
