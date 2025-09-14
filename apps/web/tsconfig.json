@@ -16,7 +16,8 @@
     "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve", // 👈 use new JSX transform
+    "jsxImportSource": "nativewind" // 👈 tells Next to compile with NativeWind
   },
   "include": [
     "**/*.ts",

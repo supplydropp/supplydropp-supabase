@@ -39,7 +39,19 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-100">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 gap-6 p-6">
+      {/* 🔵 TEST BLOCK — delete later */}
+      <div className="rounded-xl bg-white shadow-md p-6 text-center">
+        <h1 className="text-3xl font-bold text-blue-600">Style Test ✅</h1>
+        <p className="mt-2 text-gray-700">
+          If this box is styled (blue heading, gray text, shadow, rounded corners),
+          then Tailwind/NativeWind is working on web!
+        </p>
+        <button className="mt-4 px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600">
+          Test Button
+        </button>
+      </div>
+
       <SignInForm
         onSubmit={handleSubmit}
         footer={

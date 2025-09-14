@@ -1,9 +1,13 @@
-// apps/web/tailwind.config.js
-import baseConfig from "../../tailwind.config.js";
-
 /** @type {import('tailwindcss').Config} */
-const config = {
-  presets: [baseConfig],
+module.exports = {
+  content: [
+    "./pages/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "../../packages/ui/**/*.{js,jsx,ts,tsx}",
+  ],
+  presets: [require("nativewind/preset")],
+  // remove plugin line
+  // plugins: [require("nativewind/tailwind/css")],
+  important: "html", // keep this for style precedence
+  theme: { extend: {} },
 };
-
-export default config;
