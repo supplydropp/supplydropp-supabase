@@ -29,7 +29,12 @@ const nextConfig = {
     },
   },
 
-  outputFileTracingRoot: path.join(__dirname, "../../"), // ✅ keep this for Vercel monorepo
+  outputFileTracingRoot: path.join(__dirname, "../../"), // ✅ still needed for monorepo builds
+
+  // 👇 NEW — this replaces the old experimental block
+  outputFileTracingExcludes: {
+    "*": ["**/page_client-reference-manifest.js"],
+  },
 
   eslint: {
     ignoreDuringBuilds: true,
