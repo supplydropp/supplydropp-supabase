@@ -1,4 +1,9 @@
-/* eslint-env node */
-module.exports = {
-  presets: [require("../../tailwind.config.js")],
+// apps/web/tailwind.config.js
+import baseConfig from "../../tailwind.config.js";
+
+/** @type {import('tailwindcss').Config} */
+const config = {
+  presets: [baseConfig],
 };
+
+export default config;
