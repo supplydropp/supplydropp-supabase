@@ -3,6 +3,7 @@ const path = require("path");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@repo/ui", "@repo/store", "@repo/types", "@repo/lib"],
+
   webpack: (config) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
@@ -17,6 +18,7 @@ const nextConfig = {
     };
     return config;
   },
+
   turbopack: {
     resolveAlias: {
       "react-native": "react-native-web",
@@ -26,20 +28,14 @@ const nextConfig = {
       "@repo/lib": "../../packages/lib",
     },
   },
-  outputFileTracingRoot: path.join(__dirname, "../../"), // silence lockfile warning
+
+  outputFileTracingRoot: path.join(__dirname, "../../"), // ✅ keep this for Vercel monorepo
 
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-
-  experimental: {
-    // ✅ exclude problematic manifest from tracing
-    outputFileTracingExcludes: {
-      "*": ["**/page_client-reference-manifest.js"],
-    },
   },
 };
 
