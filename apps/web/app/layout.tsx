@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import type { ReactNode } from "react";
-import AuthGate from "./AuthGate";
+import AuthGate from "../components/AuthGate";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
