@@ -1,6 +1,5 @@
 "use client";
 
-import "./globals.css";
 import type { ReactNode } from "react";
 import AuthGate from "../components/AuthGate";
 
