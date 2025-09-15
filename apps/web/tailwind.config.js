@@ -1,10 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+const baseConfig = require("../../tailwind.config.js");
+
 module.exports = {
+  presets: [baseConfig], // 👈 inherit root config
   content: [
-    "./pages/**/*.{js,jsx,ts,tsx}",      // legacy pages/ support
-    "./app/**/*.{js,jsx,ts,tsx}",        // Next.js app router
-    "../../packages/ui/**/*.{js,jsx,ts,tsx}", // shared UI
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: { extend: {} },
-  plugins: [],
 };
