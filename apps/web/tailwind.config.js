@@ -6,8 +6,5 @@ module.exports = {
     "../../packages/ui/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
-  // remove plugin line
-  // plugins: [require("nativewind/tailwind/css")],
-  important: "html", // keep this for style precedence
   theme: { extend: {} },
 };
