@@ -78,3 +78,21 @@
   - Current production auth flows are stable; styling reintroduction can be done incrementally on a feature branch.
 - Require cycles in `@repo/ui` are harmless but should be tidied.
 - Upgrade minor Expo/Router versions to match SDK recommendations when convenient.
+
+# Changelog
+
+## [0.3.3] - 2025-09-15
+### Fixed
+- Vercel web build failure caused by `nativewind/preset` being included in the web Tailwind config.
+- `globals.css` parsing error resolved by ensuring plain UTF-8 encoding without BOM.
+
+### Changed
+- Split Tailwind configs per platform:
+  - **Web** (`apps/web/tailwind.config.js`): uses standard TailwindCSS only (no NativeWind).
+  - **Mobile** (`tailwind.config.js` at repo root): retains `nativewind/preset` for Expo/React Native.
+- PostCSS in web simplified to always resolve the local config.
+
+### Notes
+- Web now deploys successfully to Vercel with full Tailwind styling.
+- Mobile continues to use NativeWind for React Native styling.
+- This version marks a stable baseline for auth + styling across both platforms.

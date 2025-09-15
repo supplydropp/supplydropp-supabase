@@ -1,92 +1,120 @@
-// type.d.ts
-import type { Models } from 'react-native-appwrite';
-import type { ImageSourcePropType } from 'react-native';
-import type { ReactNode } from 'react';
+import type { ImageSourcePropType } from "react-native";
+import type { ReactNode } from "react";
 
-/** User roles we’ll use across the app */
-export type Role = 'guest' | 'host' | 'admin';
+/** User roles across the app */
+export type Role = "guest" | "host" | "admin";
 
-/** Property (boutique hotel) */
-export interface Property extends Models.Document {
+/** Base fields all DB rows share */
+export interface BaseEntity {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/** Property (boutique hotel / STR) */
+export interface Property extends BaseEntity {
   name: string;
   code: string;
   address?: string;
   active: boolean;
 }
 
-/** Product/Package (keeping your tutorial fields, optional property linkage) */
-export interface MenuItem extends Models.Document {
+/** Product / Menu item */
+export interface Product extends BaseEntity {
   name: string;
   price: number;
-  image_url: string;
-  description: string;
-  calories: number;
-  protein: number;
-  rating: number;
+  image_url?: string;
+  description?: string;
   type: string;
+  active?: boolean;
 
-  // optional fields for property/hotel scoping
+  // optional linkage
+  supplier?: string | null;
   hotelId?: string | null;
   propertyId?: string | null;
-  active?: boolean;
+
+  // optional metrics
+  calories?: number;
+  protein?: number;
+  rating?: number;
+  cost_price?: number;
+  sku?: string;
 }
 
-/** Category */
-export interface Category extends Models.Document {
+/** Category (optional grouping for products/packs) */
+export interface Category extends BaseEntity {
   name: string;
-  description: string;
+  description?: string;
 }
 
-/** App user profile stored in Appwrite `users` collection */
-export interface User extends Models.Document {
+/** Pack (bundle of products) */
+export interface Pack extends BaseEntity {
+  name: string;
+  price: number;
+  image_url?: string;
+  description?: string;
+  type: string;
+  active: boolean;
+  productIds?: string[];
+  target_margin?: number;
+  override_margin?: number;
+}
+
+/** Order */
+export interface Order extends BaseEntity {
+  userId: string;
+  packId: string;
+  status: string;
+  scheduledTime: string;
+  deliveryType: string;
+  totalPrice: number;
+  notes?: string;
+}
+
+/** App user profile (stored in Supabase `users`) */
+export interface User extends BaseEntity {
   name: string;
   email: string;
-  avatar: string;
-
-  // role-based access
+  avatar?: string;
   role: Role;
 
-  // old field still supported
+  accountId?: string; // Supabase auth.uid
   hotelId?: string | null;
-
-  // NEW: property context for the app
   currentPropertyId?: string | null;
 
-  // optional profile details
-  accountId?: string; // Appwrite Account $id
   phone?: string;
   roomNumber?: string;
 }
 
-/** Cart types (unchanged) */
+/** ----------------- Cart types ----------------- */
 export interface CartCustomization {
   id: string;
   name: string;
   price: number;
-  type: string;
+  type?: string;
 }
 
 export interface CartItemType {
-  id: string; // menu item id
+  id: string; // product/pack id
   name: string;
   price: number;
-  image_url: string;
+  image_url?: string;
   quantity: number;
   customizations?: CartCustomization[];
 }
 
 export interface CartStore {
   items: CartItemType[];
-  addItem: (item: Omit<CartItemType, 'quantity'>) => void;
-  removeItem: (id: string, customizations: CartCustomization[]) => void;
-  increaseQty: (id: string, customizations: CartCustomization[]) => void;
-  decreaseQty: (id: string, customizations: CartCustomization[]) => void;
+  addItem: (item: Omit<CartItemType, "quantity">) => void;
+  removeItem: (id: string, customizations?: CartCustomization[]) => void;
+  increaseQty: (id: string, customizations?: CartCustomization[]) => void;
+  decreaseQty: (id: string, customizations?: CartCustomization[]) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
 
-/** UI prop types */
+/** ----------------- UI prop types ----------------- */
 export interface TabBarIconProps {
   focused: boolean;
   icon: ImageSourcePropType;
@@ -119,7 +147,7 @@ export interface CustomInputProps {
   onChangeText?: (text: string) => void;
   label: string;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
 }
 
 export interface ProfileFieldProps {
@@ -128,7 +156,7 @@ export interface ProfileFieldProps {
   icon: ImageSourcePropType;
 }
 
-/** Auth & data helpers */
+/** ----------------- Auth & API helpers ----------------- */
 export interface CreateUserParams {
   email: string;
   password: string;

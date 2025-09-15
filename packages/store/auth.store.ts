@@ -1,17 +1,10 @@
-// packages/store/auth.store.ts
 import { create } from "zustand";
 import { supabase } from "@repo/lib/supabase.client";
-
-type User = {
-  id: string;
-  email: string;
-  name?: string;
-  role?: string;
-};
+import type { User as AppUser } from "@repo/types"; // 👈 reuse shared type
 
 type AuthState = {
   isAuthenticated: boolean;
-  user: User | null;
+  user: AppUser | null;
   isLoading: boolean;
 
   fetchAuthenticatedUser: () => Promise<void>;

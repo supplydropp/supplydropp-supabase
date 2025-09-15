@@ -25,7 +25,7 @@ export default function SignInScreen() {
 
       console.log("✅ [SignInScreen] signIn success:", data);
       await fetchAuthenticatedUser();
-      router.replace("/");
+      router.replace("/(tabs)");
     } catch (err: any) {
       console.error("❌ [SignInScreen] unexpected error:", err);
       alert(err?.message ?? "Sign-in failed");
