@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@repo/lib/supabase.client";
 import { SignUpForm } from "@repo/ui";
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -49,5 +49,14 @@ export default function SignUpPage() {
     <main className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <SignUpForm onSubmit={handleSubmit} loading={loading} />
     </main>
+  );
+}
+
+// ✅ Wrap it in Suspense here (fix for Vercel build)
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <SignUpContent />
+    </Suspense>
   );
 }
