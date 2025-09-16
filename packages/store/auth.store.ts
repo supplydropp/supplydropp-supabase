@@ -1,46 +1,84 @@
 import { create } from "zustand";
 import { supabase } from "@repo/lib/supabase.client";
-import type { User as AppUser } from "@repo/types"; // 👈 reuse shared type
+
+export type Role = "guest" | "host" | "admin";
+
+type UserProfile = {
+  id: string;
+  email: string;
+  name?: string;
+  avatar?: string | null;
+  role?: Role;
+};
 
 type AuthState = {
   isAuthenticated: boolean;
-  user: AppUser | null;
+  user: UserProfile | null;
   isLoading: boolean;
+  hasFetched: boolean;
 
-  fetchAuthenticatedUser: () => Promise<void>;
+  fetchAuthenticatedUser: (force?: boolean) => Promise<void>;
   logout: () => Promise<void>;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   user: null,
-  isLoading: true,
+  isLoading: false,
+  hasFetched: false,
 
-  fetchAuthenticatedUser: async () => {
-    console.log("🟡 fetchAuthenticatedUser called");
+  fetchAuthenticatedUser: async (force = false) => {
+  console.log("🟡 [AuthStore] fetchAuthenticatedUser called", { force });
+
+  if (get().hasFetched && !force) {
+    console.log("ℹ️ [AuthStore] Already fetched, skipping");
+    return;
+  }
+
     set({ isLoading: true });
 
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      console.log("🔎 [AuthStore] Supabase getUser result:", { user, error });
 
       if (error || !user) {
-        console.log("❌ No active Supabase session");
-        set({ isAuthenticated: false, user: null });
-      } else {
-        console.log("✅ Supabase session found:", user);
-        set({
-          isAuthenticated: true,
-          user: {
-            id: user.id,
-            email: user.email!,
-            name: user.user_metadata?.name,
-            role: user.user_metadata?.role,
-          },
-        });
+        console.log("❌ [AuthStore] No active Supabase session");
+        set({ isAuthenticated: false, user: null, hasFetched: true });
+        return;
       }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.warn("⚠️ [AuthStore] Profile fetch error:", profileError.message);
+      }
+
+      const newUser: UserProfile = {
+        id: user.id,
+        email: user.email!,
+        name: profile?.name ?? user.user_metadata?.name,
+        avatar: profile?.avatar ?? null,
+        role: profile?.role ?? "guest",
+      };
+
+      set({
+        isAuthenticated: true,
+        user: newUser,
+        hasFetched: true,
+      });
+
+      console.log("✅ [AuthStore] User profile loaded:", newUser);
     } catch (err) {
-      console.error("⚠️ fetchAuthenticatedUser error:", err);
-      set({ isAuthenticated: false, user: null });
+      console.error("⚠️ [AuthStore] fetchAuthenticatedUser unexpected error:", err);
+      set({ isAuthenticated: false, user: null, hasFetched: true });
     } finally {
       set({ isLoading: false });
     }
@@ -48,12 +86,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     try {
-      console.log("🚪 Logging out via Supabase");
+      console.log("🚪 [AuthStore] Logging out via Supabase");
       await supabase.auth.signOut();
     } catch (e) {
-      console.warn("⚠️ Logout failed:", e);
+      console.warn("⚠️ [AuthStore] Logout failed:", e);
     } finally {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, user: null, hasFetched: false });
+      if (typeof window !== "undefined") {
+        window.location.href = "/sign-in";
+      }
     }
   },
 }));

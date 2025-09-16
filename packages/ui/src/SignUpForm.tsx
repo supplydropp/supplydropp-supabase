@@ -1,4 +1,3 @@
-// packages/ui/src/SignUpForm.tsx
 import React, { useState } from "react";
 import { View } from "react-native";
 import { TextInput, Button } from "@repo/ui";
@@ -53,6 +52,7 @@ export function SignUpForm({ onSubmit, loading, footer }: Props) {
         label="Password"
         secureTextEntry
       />
+
       <Button onPress={handleSubmit} disabled={loading || isSubmitting}>
         {loading || isSubmitting ? "Loading..." : "Sign Up"}
       </Button>
