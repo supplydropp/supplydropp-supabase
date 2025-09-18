@@ -1,9 +1,16 @@
 "use client";
 
-import { useAuthStore } from "@repo/store/auth.store";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@repo/store/auth.store";
 
 export default function AdminPanelPage() {
   const { user, logout } = useAuthStore();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();        // clear session
+    router.replace("/");   // 🚀 go back to splash
+  };
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white gap-6">
@@ -12,9 +19,9 @@ export default function AdminPanelPage() {
         {user?.name ?? user?.email}, oversee users, orders, and system KPIs.
       </p>
 
-      {/* 🔘 Logout button for testing */}
+      {/* 🔘 Logout button */}
       <button
-        onClick={logout}
+        onClick={handleLogout}
         className="px-4 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition"
       >
         🚪 Logout

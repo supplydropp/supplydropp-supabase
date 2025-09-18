@@ -10,6 +10,7 @@ function SignUpContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
+  // ✅ Role comes from ?role=guest|host — defaults to guest
   const role = (searchParams.get("role") as "guest" | "host") ?? "guest";
 
   const handleSubmit = async (email: string, password: string, name: string) => {
@@ -17,6 +18,7 @@ function SignUpContent() {
 
     setLoading(true);
     try {
+      // ✅ Only create the auth user — no DB insert here
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -24,22 +26,18 @@ function SignUpContent() {
           emailRedirectTo:
             (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000") +
             "/auth/callback",
-          data: { name, role },
+          data: { name, role }, // ✅ keep role + name in metadata
         },
       });
 
-      if (error) {
-        console.error("❌ [SignUpPage] signUp error:", error.message);
-        alert(error.message);
-        return;
-      }
+      if (error) throw error;
+      console.log("✅ [SignUpPage] Auth account created:", data);
 
-      console.log("✅ [SignUpPage] signUp success:", data);
-
+      // Redirect user to check-email page
       router.replace("/check-email");
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error("❌ [SignUpPage] unexpected error:", err);
-      alert(err instanceof Error ? err.message : "Sign-up failed");
+      alert(err?.message ?? "Sign-up failed");
     } finally {
       setLoading(false);
     }
@@ -52,7 +50,7 @@ function SignUpContent() {
   );
 }
 
-// ✅ Wrap it in Suspense here (fix for Vercel build)
+// ✅ Wrap in Suspense for Vercel builds
 export default function SignUpPage() {
   return (
     <Suspense fallback={<p>Loading...</p>}>

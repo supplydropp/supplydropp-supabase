@@ -1,31 +1,35 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuthStore } from "@repo/store/auth.store";
-import { PUBLIC_PATHS } from "@repo/config";
+import useAuthStore from "@repo/store/auth.store";
+import { getRedirectTarget } from "@repo/lib/authGateLogic";
+import { PUBLIC_PATHS } from "@repo/config/routes";
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, fetchAuthenticatedUser, user } = useAuthStore();
+  const { isAuthenticated, isLoading, fetchAuthenticatedUser, user, hasFetched } =
+    useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
-  // ✅ Run only once (no force)
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const didFetch = useRef(false);
+
+  // Fetch once
   useEffect(() => {
     if (!didFetch.current) {
-      console.log("🟡 [AuthGate] Initial fetch of authenticated user (once)...");
-      fetchAuthenticatedUser(); // 👈 no force here
+      console.log("🟡 [AuthGate:Web] Initial fetch...");
+      fetchAuthenticatedUser();
       didFetch.current = true;
     }
   }, [fetchAuthenticatedUser]);
 
-  // ✅ Handle redirects
+  // Handle redirects only after first fetch
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !hasFetched) return;
 
     console.log(
-      "🔍 [AuthGate] Path check",
+      "🔍 [AuthGate:Web] Path:",
       pathname,
       "| Authenticated:",
       isAuthenticated,
@@ -33,31 +37,42 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
       user?.role
     );
 
-    // Unauthenticated → protected path
-    if (!isAuthenticated && !PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
-      console.log("🔒 [AuthGate] Redirect unauthenticated → /sign-in");
-      router.replace("/sign-in");
+    // 🔴 If not logged in
+    if (!isAuthenticated) {
+      if (!PUBLIC_PATHS.includes(pathname)) {
+        if (pathname !== "/") {
+          console.log("🔑 [AuthGate:Web] Not authenticated, redirecting → /");
+          setIsRedirecting(true);
+          router.replace("/");
+        } else {
+          console.log("✅ [AuthGate:Web] Already on splash, no redirect");
+          setIsRedirecting(false);
+        }
+      }
       return;
     }
 
-    // Authenticated → public path
-    if (
-      isAuthenticated &&
-      PUBLIC_PATHS.some((p) => pathname.startsWith(p)) &&
-      !pathname.startsWith("/auth/callback")
-    ) {
-      let target = "/guest/dashboard";
-      if (user?.role === "host") target = "/host/dashboard";
-      if (user?.role === "admin") target = "/admin/dashboard";
-
-      if (pathname !== target) {
-        console.log(`🔓 [AuthGate] Redirecting ${user?.role} → ${target}`);
-        router.replace(target);
-      }
+    // ⏳ If logged in but role not yet resolved
+    if (!user?.role) {
+      console.log("⏳ [AuthGate:Web] Role not resolved yet, skipping redirect");
+      return;
     }
-  }, [isAuthenticated, isLoading, pathname, user?.role, router]);
 
-  if (isLoading) {
+    // 🎯 Normal redirect logic
+    const target = getRedirectTarget(true, pathname, user.role);
+    console.log("🎯 [AuthGate:Web] getRedirectTarget returned:", target);
+
+    if (target && target !== pathname) {
+      console.log(`🔀 [AuthGate:Web] Redirect → ${target}`);
+      setIsRedirecting(true);
+      router.replace(target);
+    } else {
+      console.log("✅ [AuthGate:Web] No redirect needed, staying put");
+      setIsRedirecting(false);
+    }
+  }, [isAuthenticated, user?.role, isLoading, hasFetched, pathname, router]);
+
+  if (isLoading || isRedirecting || !hasFetched) {
     return (
       <main className="flex items-center justify-center min-h-screen">
         <p>⏳ Checking session…</p>

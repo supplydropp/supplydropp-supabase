@@ -1,13 +1,22 @@
-// packages/config/routes.ts
+export const ROUTES = {
+  // Auth
+  SIGN_IN: "/sign-in",         // ✅ no (auth)
+  SIGN_UP: "/sign-up",
+  CHECK_EMAIL: "/check-email",
+  AUTH_CALLBACK: "/callback",
 
-// 👇 App home after login
-export const APP_HOME = "/"; 
+  // Dashboards
+  GUEST_HOME: "/guest",
+  HOST_HOME: "/host",
+  ADMIN_HOME: "/admin",
+} as const;
 
-// 👇 Publicly accessible routes
-export const PUBLIC_PATHS = [
-  "/", 
-  "/sign-in", 
-  "/sign-up", 
-  "/check-email", 
-  "/auth/callback"
+export const APP_HOME = "/";
+
+export const PUBLIC_PATHS: string[] = [
+  APP_HOME,
+  ROUTES.SIGN_IN,
+  ROUTES.SIGN_UP,
+  ROUTES.CHECK_EMAIL,
+  ROUTES.AUTH_CALLBACK,
 ];

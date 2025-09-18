@@ -21,19 +21,19 @@ type AuthState = {
   logout: () => Promise<void>;
 };
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   user: null,
   isLoading: false,
   hasFetched: false,
 
   fetchAuthenticatedUser: async (force = false) => {
-  console.log("🟡 [AuthStore] fetchAuthenticatedUser called", { force });
+    console.log("🟡 [AuthStore] fetchAuthenticatedUser called", { force });
 
-  if (get().hasFetched && !force) {
-    console.log("ℹ️ [AuthStore] Already fetched, skipping");
-    return;
-  }
+    if (get().hasFetched && !force) {
+      console.log("ℹ️ [AuthStore] Already fetched, skipping");
+      return;
+    }
 
     set({ isLoading: true });
 
@@ -91,10 +91,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (e) {
       console.warn("⚠️ [AuthStore] Logout failed:", e);
     } finally {
-      set({ isAuthenticated: false, user: null, hasFetched: false });
+      set({ isAuthenticated: false, user: null, hasFetched: true });
+
+      // 🌐 Web-only redirect (safe guard)
       if (typeof window !== "undefined") {
-        window.location.href = "/sign-in";
+        window.location.href = "/";
       }
+      // 📱 On mobile, AuthGate will handle redirect when session clears
     }
   },
 }));
+
+export default useAuthStore;

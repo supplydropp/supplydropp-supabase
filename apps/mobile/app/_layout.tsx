@@ -1,8 +1,9 @@
-// apps/mobile/app/_layout.tsx
-import "./global.css"; // ✅ same folder as _layout.tsx
+"use client";
 
+import "./global.css";
 import { Slot } from "expo-router";
 
 export default function RootLayout() {
+  // Only global concerns: theme, fonts, providers
   return <Slot />;
 }

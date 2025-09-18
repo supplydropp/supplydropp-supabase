@@ -1,7 +1,9 @@
 // packages/ui/src/SignInForm.tsx
 import React, { useState } from "react";
 import { View } from "react-native";
-import { TextInput, Button } from "@repo/ui";
+import { TextInput } from "./TextInput";
+import { Button } from "./Button";
+
 
 type Props = {
   onSubmit: (email: string, password: string) => Promise<void>;

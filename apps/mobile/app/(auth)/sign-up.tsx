@@ -1,55 +1,40 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { router, Link } from "expo-router";
+import { router, Link, useLocalSearchParams } from "expo-router";
 import { SignUpForm } from "@repo/ui";
 import { supabase } from "@repo/lib/supabase.client";
-import { useAuthStore } from "@repo/store/auth.store";
+import * as Linking from "expo-linking";
 
 export default function SignUpScreen() {
-  const { fetchAuthenticatedUser } = useAuthStore();
+  const { role: roleParam } = useLocalSearchParams<{ role?: "guest" | "host" }>();
+  const role = roleParam ?? "guest";
 
   const handleSubmit = async (email: string, password: string, name: string) => {
-    console.log("🟢 [SignUpScreen] handleSubmit called", { email });
-
     try {
-      // 1. Create Supabase Auth account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // ✅ Unified redirect URL (no `(auth)`)
+      const redirectUrl = Linking.createURL("auth/callback");
+      console.log("🔗 [SignUpScreen] redirectUrl generated:", redirectUrl);
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: { name, role },
+        },
       });
 
-      if (authError) {
-        console.error("❌ [SignUpScreen] error:", authError.message);
-        alert(authError.message);
-        return;
-      }
+      console.log("📤 [SignUpScreen] Payload sent to Supabase:", {
+        email,
+        emailRedirectTo: redirectUrl,
+      });
 
-      console.log("✅ [SignUpScreen] Auth account created:", authData);
+      if (error) throw error;
+      console.log("✅ [SignUpScreen] signUp success:", data);
 
-      // 2. Insert into users table
-      if (authData.user) {
-        const { error: insertError } = await supabase.from("users").insert({
-          id: authData.user.id,
-          email,
-          name,
-          role: "guest",
-          avatar: null,
-        });
-
-        if (insertError) {
-          console.warn("⚠️ [SignUpScreen] Failed to insert profile:", insertError.message);
-        }
-      }
-
-      // 3. Refresh Zustand state
-      await fetchAuthenticatedUser();
-
-      // 4. Redirect home
-      router.replace("/(tabs)");
-    } catch (err: any) {
-      console.error("❌ [SignUpScreen] unexpected error:", err);
-      alert(err?.message ?? "Sign-up failed");
+      router.replace("/check-email");
+    } catch (err) {
+      console.error("❌ [SignUpScreen] Error during sign up:", err);
     }
   };
 
@@ -59,7 +44,9 @@ export default function SignUpScreen() {
         onSubmit={handleSubmit}
         footer={
           <Link href="/sign-in" asChild>
-            <Text className="font-semibold text-blue-500">Already have an account? Sign In</Text>
+            <Text className="font-semibold text-blue-500">
+              Already have an account? Sign In
+            </Text>
           </Link>
         }
       />
